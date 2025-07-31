@@ -1,3 +1,15 @@
+# otel_telemetry_metrics.ex
+# Based on https://github.com/tsloughter/opentelemetry-erlang-contrib/blob/5f8627989c7ea69c0a02f008673ff9fc8fe7f950/utilities/opentelemetry_telemetry_metrics/lib/otel_telemetry_metrics.ex
+# From this pull request: https://github.com/open-telemetry/opentelemetry-erlang-contrib/pull/303
+# Licensed under the Apache License, Version 2.0
+#
+# Modifications Copyright (c) 2025, TV4 Media AB
+#
+# Changes:
+#  * Handling of instruments so that it works in my app
+#  * Some refactoring
+
+
 # Ignoring this file because it should be extracted to opentelemetry-erlang-contrib
 # Code is in this repo while we get it working
 #

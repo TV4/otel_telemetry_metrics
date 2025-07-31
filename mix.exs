@@ -15,7 +15,7 @@ defmodule OtelTelemetryMetrics.MixProject do
 
   def package do
     [
-      licenses: ["MIT"],
+      licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/TV4/otel_telemetry_metrics"}
     ]
   end
