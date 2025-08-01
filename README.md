@@ -20,3 +20,36 @@ This library should eventually go away when this PR has eventually been merged:
 <https://github.com/open-telemetry/opentelemetry-erlang-contrib/pull/303>
 
 In the meantime, I was using this code in three different apps and I didn't want to copy/paste it between all of them.
+
+## `reporter_options`
+
+If you need to customize your buckets, you can use the `reporter_options` key to pass options down to `erlang-opentelemetry`:
+
+```elixir
+      summary("phoenix.endpoint.stop.duration",
+        unit: {:native, :millisecond},
+        reporter_options: [
+          otel: %{
+            advisory_params: %{
+              explicit_bucket_boundaries: [
+                0.5,
+                1.0,
+                2.5,
+                5.0,
+                7.5,
+                10.0,
+                25.0,
+                50.0,
+                75.0,
+                100.0,
+                250.0,
+                500.0,
+                750.0,
+                1000.0
+              ]
+            }
+          }
+        ]
+      ),
+
+```

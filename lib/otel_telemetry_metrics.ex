@@ -101,10 +101,17 @@ defmodule OtelTelemetryMetrics do
       metrics_by_measurement = Enum.group_by(metrics, &List.last(&1.name))
 
       for metric <- metrics do
-        create_instrument(metric, meter, %{
-          unit: unit(metric.unit),
-          description: format_description(metric)
-        })
+        create_instrument(
+          metric,
+          meter,
+          Map.merge(
+            %{
+              unit: unit(metric.unit),
+              description: format_description(metric)
+            },
+            Keyword.get(metric.reporter_options, :otel, %{})
+          )
+        )
       end
 
       handler_id = {__MODULE__, event_name, self()}
