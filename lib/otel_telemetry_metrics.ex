@@ -164,7 +164,7 @@ defmodule OtelTelemetryMetrics do
   def handle_event(event_name, measurements, metadata, %{
         metrics_by_event_name: metrics_by_event_name
       }) do
-    metrics = Map.get(metrics_by_event_name, event_name)
+    metrics = Map.get(metrics_by_event_name, event_name, [])
 
     for metric <- metrics do
       if value = keep?(metric, metadata) && extract_measurement(metric, measurements, metadata) do
