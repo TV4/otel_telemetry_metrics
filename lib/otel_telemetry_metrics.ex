@@ -9,7 +9,6 @@
 #  * Handling of instruments so that it works in my app
 #  * Some refactoring
 
-
 # Ignoring this file because it should be extracted to opentelemetry-erlang-contrib
 # Code is in this repo while we get it working
 #
@@ -98,8 +97,6 @@ defmodule OtelTelemetryMetrics do
     metrics
     |> Enum.group_by(& &1.event_name)
     |> Enum.map(fn {event_name, metrics} ->
-      metrics_by_measurement = Enum.group_by(metrics, &List.last(&1.name))
-
       for metric <- metrics do
         create_instrument(
           metric,
@@ -116,12 +113,14 @@ defmodule OtelTelemetryMetrics do
 
       handler_id = {__MODULE__, event_name, self()}
 
+      metrics_by_event_name = Enum.group_by(metrics, & &1.event_name)
+
       :ok =
         :telemetry.attach(
           handler_id,
           event_name,
           &__MODULE__.handle_event/4,
-          %{metrics_by_measurement: metrics_by_measurement}
+          %{metrics_by_event_name: metrics_by_event_name}
         )
 
       handler_id
@@ -163,10 +162,11 @@ defmodule OtelTelemetryMetrics do
   end
 
   def handle_event(event_name, measurements, metadata, %{
-        metrics_by_measurement: metrics_by_measurement
+        metrics_by_event_name: metrics_by_event_name
       }) do
-    for {measurement, metrics} <- metrics_by_measurement,
-        metric <- metrics do
+    metrics = Map.get(metrics_by_event_name, event_name)
+
+    for metric <- metrics do
       if value = keep?(metric, metadata) && extract_measurement(metric, measurements, metadata) do
         ctx = OpenTelemetry.Ctx.get_current()
         tags = extract_tags(metric, metadata)
@@ -174,7 +174,7 @@ defmodule OtelTelemetryMetrics do
         meter = get_meter()
 
         name =
-          (event_name ++ [measurement])
+          metric.name
           |> Enum.map_join(".", &to_string/1)
           |> String.to_atom()
 
@@ -217,4 +217,3 @@ defmodule OtelTelemetryMetrics do
 end
 
 # coveralls-ignore-stop
-
